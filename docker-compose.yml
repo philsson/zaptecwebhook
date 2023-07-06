@@ -9,17 +9,21 @@ version: "3.8"
 services:
 
   zaptecwebhook:
-    image: erikadvectas/zaptecwebhook
+# To use compiled and uploaded image. NOTE this is an arm version
+#    image: erikadvectas/zaptecwebhook
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - /etc/localtime:/etc/localtime:ro
     environment:
-      - INTID=ij2YChMgxNBTfQtH5Qv6U7oQPv2kdPnWgrjMs8iwKebkh5UVnnZ6UMdaNCMVunen
-      - EXTID=djS8b9wGb7Q6RyA8cUa4VtvHGFLUbAEp5rRWdfKX8Gs7h9uyssb95xk935L8tUwf
+      - INTID=${INTID}
+      - EXTID=${EXTID}
     deploy:
       restart_policy:
         condition: any
         delay: 90s
-        max_attempts: 1000
+#        max_attempts: 1000 # Not compatible with the "always" restart policy
         window: 240s
       placement:
         constraints: [node.labels.type==rpi]
@@ -36,13 +40,13 @@ services:
         - traefik.http.services.zaptecwebhook-lb.loadbalancer.server.port=5000
         - traefik.http.services.zaptecwebhook-lb.loadbalancer.sticky=true
         - traefik.http.routers.zaptecwebhook-rtr.middlewares=middlewares-secure-headers@file
-    networks:
-      - network_traefik_public
+#    networks:
+#      - network_traefik_public
     ports:
       - 91:5000 
 
 
 
-networks:
-  network_traefik_public:
-    external: true
+#networks:
+#  network_traefik_public:
+#    external: true
